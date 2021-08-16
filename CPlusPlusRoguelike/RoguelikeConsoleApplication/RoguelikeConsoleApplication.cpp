@@ -9,12 +9,12 @@
 using namespace Roguelike;
 using namespace Roguelike::Generation;
 
-void printGameManager(GameManager* gameManager) {
+void printGameManager(const GameManager& gameManager) {
     std::string s = "";
-    for (int i = 0, count = gameManager->Width * gameManager->Height; i < count; i++) {
-        switch (gameManager->Tiles[i]) {
+    for (int i = 0, count = gameManager.Width * gameManager.Height; i < count; i++) {
+        switch (gameManager.Tiles[i]) {
             case GameManager::Tile::Ground:
-                s += '@';
+                s += ' ';
                 break;
             case GameManager::Tile::Wall:
                 s += '#';
@@ -23,7 +23,7 @@ void printGameManager(GameManager* gameManager) {
                 s += 'E';
                 break;
         }
-        if (((i + 1) % gameManager->Width) == 0)
+        if (((i + 1) % gameManager.Width) == 0)
             s += '\n';
     }
     std::cout << s;
@@ -31,9 +31,9 @@ void printGameManager(GameManager* gameManager) {
 
 int main() {
     srand(time(NULL));
-    GameManager* gameManager = new GameManager(20, 10);
-    Generate(gameManager);
-    printGameManager(gameManager);
+    GameManager* gameManager = new GameManager(80, 40);
+    Generator(*gameManager).Generate();
+    printGameManager(*gameManager);
     delete gameManager;
 }
 
