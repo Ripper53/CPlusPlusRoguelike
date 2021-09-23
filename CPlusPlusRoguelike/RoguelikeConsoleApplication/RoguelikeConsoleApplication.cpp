@@ -5,18 +5,21 @@
 #include "GameManager.h"
 #include "GenerateMap.h"
 #include <random>
+#include <cwchar>
+#include <windows.h>
 
 using namespace Roguelike;
 using namespace Roguelike::Generation;
 
-void printGameManager(const GameManager& gameManager) {
+template<int W, int H>
+void printGameManager(const GameManager<W, H>& gameManager) {
     std::string s = "";
     for (int i = 0, count = gameManager.Width * gameManager.Height; i < count; i++) {
         switch (gameManager.Tiles[i]) {
-            case GameManager::Tile::Ground:
+            case Tile::Ground:
                 s += ' ';
                 break;
-            case GameManager::Tile::Wall:
+            case Tile::Wall:
                 s += '#';
                 break;
             default:
@@ -29,12 +32,34 @@ void printGameManager(const GameManager& gameManager) {
     std::cout << s;
 }
 
-int main() {
+inline void setup() {
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(cfi);
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = 8;                  // Width of each character in the font
+    cfi.dwFontSize.Y = 12;                  // Height
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    wcscpy_s(cfi.FaceName, L"Consolas");    // Choose your font
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
     srand(time(NULL));
-    GameManager* gameManager = new GameManager(80, 40);
-    Generator(*gameManager).Generate();
+}
+
+int main() {
+    setup();
+
+    time_t start, end;
+    time(&start);
+    constexpr int w = 80, h = 40;
+    GameManager<w, h>* gameManager = new GameManager<w, h>();
+    Generator<w, h>(*gameManager).Generate();
+    time(&end);
     printGameManager(*gameManager);
     delete gameManager;
+
+    double time_taken = double(end - start);
+    std::cout << "Time taken by program is : " << std::fixed << time_taken << std::cout.precision(8);
+    std::cout << " sec " << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
